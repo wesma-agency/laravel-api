@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => json_decode(getenv('CORS_POLITIC')),
+    'allowed_origins' => explode(',', getenv('CORS_POLITIC')),
 
     'allowed_origins_patterns' => [],
 
