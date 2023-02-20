@@ -16,9 +16,13 @@ Route::group([
     'middleware' => 'api',
     'prefix' => 'auth'
 ], function ($router) {
-    Route::post('/login', [AuthController::class, 'login'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::get('/login', function () {
+        return response()->json(['error' => 'Unauthorized'], 401);
+    })->name('login');
     Route::post('/register', [AuthController::class, 'register'])->name('register');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::post('/refresh', [AuthController::class, 'refresh'])->name('refresh');
-    Route::get('/user-profile', [AuthController::class, 'userProfile'])->name('user-profile');    
+    Route::get('/user-profile', [AuthController::class, 'userProfile'])->name('user_profile');    
+    // Route::get('/access-denied', [AuthController::class, 'accessDenied'])->name('access_denied');    
 });

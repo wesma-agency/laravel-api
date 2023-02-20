@@ -14,7 +14,7 @@ class AuthController extends Controller
      * @return void
      */
     public function __construct() {
-        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register', 'refresh']]);
     }
     /**
      * Get a JWT via given credentials.
@@ -32,9 +32,10 @@ class AuthController extends Controller
         if (! $token = auth()->attempt($validator->validated())) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        $nToken = $this->createNewToken($token);
+        /*$nToken = $this->createNewToken($token);
         Cookie::queue('access_token', $nToken, 0);
-        return $nToken;
+        return $nToken;*/
+        return $this->createNewToken($token);
     }
     /**
      * Register a User.
@@ -84,6 +85,14 @@ class AuthController extends Controller
      */
     public function userProfile() {
         return response()->json(auth()->user());
+    }
+    /**
+     * Return access denied json.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function accessDenied() {
+        return response()->json(['errors' => ['need_refresh_token' => true]]);
     }
     /**
      * Get the token array structure.
