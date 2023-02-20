@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use App\Models\User;
 use Validator;
 
@@ -31,7 +32,9 @@ class AuthController extends Controller
         if (! $token = auth()->attempt($validator->validated())) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        return $this->createNewToken($token);
+        $nToken = $this->createNewToken($token);
+        Cookie::queue('access_token', $nToken, 0);
+        return $nToken;
     }
     /**
      * Register a User.
