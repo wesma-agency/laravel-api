@@ -18,7 +18,12 @@ Route::group([
 ], function ($router) {
     Route::post('/login', [AuthController::class, 'login']);
     Route::get('/login', function () {
-        return response()->json(['error' => 'Unauthorized'], 401);
+        if (auth()->user()) {
+            $response = response()->json(['error' => 'Not API Request'], 400);
+        } else {
+            $response = response()->json(['error' => 'Unauthorized'], 401);            
+        }
+        return $response;
     })->name('login');
     Route::post('/register', [AuthController::class, 'register'])->name('register');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
