@@ -18,6 +18,7 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
+				'role'
     ];
     /**
      * The attributes that should be hidden for arrays.
@@ -52,5 +53,38 @@ class User extends Authenticatable implements JWTSubject
      */
     public function getJWTCustomClaims() {
         return [];
-    }    
+    }
+		
+		
+		
+		
+		
+		
+		
+		
+		public function updateItem(int $id = 0, array $data = array())
+    {
+        $data = $this->validateData($data);
+        $errors = array();
+        if (!(int)$id || empty($data))
+            return array(
+                'status'    => false,
+                'data'      => array(),
+                'errors'    => array('Not enough data to update!')
+            );
+        if ($id == 1) 
+            unset($data['roles_id']);
+        try {
+            $data = $this::where('id', $id)->update($data);
+            $status = true;
+        } catch (\Illuminate\Database\QueryException $e) {
+            $status = false;
+            $errors[] = $e->getMessage();
+        }
+        return array(
+            'status'    => $status,
+            'data'      => $data,
+            'errors'    => $errors
+        );
+    } 
 }

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use App\Models\User;
 use Validator;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -22,6 +23,8 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function login(Request $request){
+			
+			
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required|string|min:6',
@@ -43,6 +46,8 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function register(Request $request) {
+			
+			
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:100|unique:users',
@@ -53,8 +58,17 @@ class AuthController extends Controller
         }
         $user = User::create(array_merge(
                     $validator->validated(),
-                    ['password' => bcrypt($request->password)]
+                    [
+											'password' => bcrypt($request->password),
+											'role' => Str::upper($request->role),
+										]
                 ));
+												
+				
+				if( $user->id ){
+					return $this->login($request);
+				}
+				
         return response()->json([
             'message' => 'User successfully registered',
             'user' => $user
