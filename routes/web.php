@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\ApiUserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,5 +15,14 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+  return view('welcome');
 });
+
+
+
+// Route::group([
+//   'middleware' => 'api',
+//   'prefix' => 'api'
+// ], function ($router) {
+//   Route::any('/test', [ApiUserController::class, 'index'])->name('api_test');
+// });

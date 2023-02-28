@@ -2,6 +2,9 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+
+use App\Http\Controllers\API\ApiUserController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -21,13 +24,23 @@ Route::group([
         if (auth()->user()) {
             $response = response()->json(['error' => 'Not API Request'], 400);
         } else {
-            $response = response()->json(['error' => 'Unauthorized'], 401);            
+            $response = response()->json(['error' => 'Unauthorized'], 401);
         }
         return $response;
-    })->name('login');
+    }
+    )->name('login');
     Route::post('/register', [AuthController::class, 'register'])->name('register');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::post('/refresh', [AuthController::class, 'refresh'])->name('refresh');
-    Route::get('/user-profile', [AuthController::class, 'userProfile'])->name('user_profile');    
-    // Route::get('/access-denied', [AuthController::class, 'accessDenied'])->name('access_denied');    
+    Route::get('/user-profile', [AuthController::class, 'userProfile'])->name('user_profile');
+    // Route::get('/access-denied', [AuthController::class, 'accessDenied'])->name('access_denied');
 });
+
+
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'api'
+  ], function ($router) {
+    Route::any('/test', [ApiUserController::class, 'index'])->name('api_test');
+  });
