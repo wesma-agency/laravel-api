@@ -5,8 +5,11 @@ use App\Http\Controllers\Controller as Controller;
 use Illuminate\Support\Facades\Route;
 
 
-
 class ApiController extends Controller {
+
+	public function __construct() {
+		$this->middleware('App\Http\Middleware\ApiBackend');
+	}
 
 	public function index() {
 
