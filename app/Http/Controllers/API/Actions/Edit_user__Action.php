@@ -24,9 +24,18 @@ class Edit_user__Action extends ApiController {
 
 			if( $data === 1 ){
 				$data = array();
+				return $this->sendResponse($data);
 			}
 
-			return $this->sendResponse($data);
+			else {
+				return $this->sendError(
+					$message = $data['message'],
+					$code = $data['code'],
+					$error = $data['error']
+				);
+			}
+
+			
 
 		} else {
 			return $this->sendError(
