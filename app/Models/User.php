@@ -61,6 +61,17 @@ class User extends Authenticatable implements JWTSubject
 		
 		
 		
+		public function getAllUsers() {
+      
+			$result = $this->select('id', 'email', 'name', 'role', 'active', 'created_at', 'updated_at')
+				->get()
+				->keyBy('id')
+				->toArray();
+			
+			return $result;
+    }
+		
+		
 		
 		public function updateItem(int $id = 0, array $data = array())
     {

@@ -3,7 +3,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
-use App\Http\Controllers\API\ApiUserController;
+use App\Http\Controllers\API\ApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,8 +39,7 @@ Route::group([
 
 
 Route::group([
-    'middleware' => 'api',
-    'prefix' => 'api'
-  ], function ($router) {
-    Route::any('/test', [ApiUserController::class, 'index'])->name('api_test');
-  });
+    'prefix' => 'action'
+], function ($router) {
+    Route::any('/{part_1?}', [ApiController::class, 'index'])->name('api_test');
+});

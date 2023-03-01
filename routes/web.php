@@ -19,10 +19,3 @@ Route::get('/', function () {
 });
 
 
-
-// Route::group([
-//   'middleware' => 'api',
-//   'prefix' => 'api'
-// ], function ($router) {
-//   Route::any('/test', [ApiUserController::class, 'index'])->name('api_test');
-// });
