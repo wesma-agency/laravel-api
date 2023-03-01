@@ -10,10 +10,9 @@ class Get_users__Action extends ApiController {
 		$data = ['aaa', 'bbb'];
 
 		$Users = new UsersController();
+		$data = $Users->getAllUsers();
 
-		$message = $Users->getAllUsers();
-
-		return $this->sendResponse($message, $data);
+		return $this->sendResponse($data);
 		
 	}
 } 

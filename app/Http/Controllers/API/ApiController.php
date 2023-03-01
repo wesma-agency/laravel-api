@@ -35,7 +35,7 @@ class ApiController extends Controller {
 	}
 
 
-	public function sendResponse($message = [], $data = []) {
+	public function sendResponse($data = [], $message = []) {
 
 		$response = [
 			'success' => true,
