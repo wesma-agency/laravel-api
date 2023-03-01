@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Support\Facades\Auth;
+
 
 class ApiBackend {
     /**
@@ -20,7 +20,20 @@ class ApiBackend {
 
         try {
             $JWTAuth = \Tymon\JWTAuth\Facades\JWTAuth::parseToken()->authenticate();
+            
+            $accessData = $JWTAuth->getOriginal();
+
+            $request->merge([
+                'accessData' => $accessData
+            ]);
+
         } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
+            return redirect('/');
+        }
+        catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+            return redirect('/');
+        }
+        catch (\Tymon\JWTAuth\Exceptions\TokenBlacklistedException $e) {
             return redirect('/');
         }
 

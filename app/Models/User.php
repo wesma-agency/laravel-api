@@ -1,13 +1,13 @@
 <?php
 namespace App\Models;
+
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable implements JWTSubject
-{
+class User extends Authenticatable implements JWTSubject {
     use HasFactory, Notifiable;
     /**
      * The attributes that are mass assignable.
@@ -18,7 +18,7 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
-				'role'
+        'role'
     ];
     /**
      * The attributes that should be hidden for arrays.
@@ -37,7 +37,7 @@ class User extends Authenticatable implements JWTSubject
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-    
+
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
@@ -54,36 +54,68 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims() {
         return [];
     }
-		
-		
-		
-		
-		
-		
-		
-		public function getAllUsers() {
-      
-			$result = $this->select('id', 'email', 'name', 'role', 'active', 'created_at', 'updated_at')
-				->get()
-				->keyBy('id')
-				->toArray();
-			
-			return $result;
+
+
+
+
+
+
+
+    public function getAllUsers() {
+
+        $result = $this->select('id', 'email', 'name', 'role', 'active', 'created_at', 'updated_at')
+            ->get()
+            ->keyBy('id')
+            ->toArray();
+
+        return $result;
     }
-		
-		
-		
-		public function updateItem(int $id = 0, array $data = array())
-    {
+
+
+    public function editUser($requestData) {
+
+       
+
+        $result = false;
+
+        $id = (int)$requestData['id'];
+        $query = array();
+
+        if( !empty($requestData['email']) ){
+            $query['email'] = $requestData['email'];
+        }
+        if( !empty($requestData['name']) ){
+            $query['name'] = $requestData['name'];
+        }
+        if( !empty($requestData['role']) ){
+            $query['role'] = $requestData['role'];
+        }
+        if( !empty($requestData['active']) ){
+            $query['active'] = $requestData['active'];
+        }
+        if( !empty($requestData['password']) ){
+            $query['password'] = $requestData['password'];
+        }
+
+
+
+        $result = $this::where('id', $id)->update($query);
+
+        return $result;
+    }
+
+
+
+    public function updateItem(int $id = 0, array $data = array()) {
         $data = $this->validateData($data);
         $errors = array();
-        if (!(int)$id || empty($data))
+        if (!(int) $id || empty($data))
             return array(
-                'status'    => false,
-                'data'      => array(),
-                'errors'    => array('Not enough data to update!')
+                'status' => false,
+                'data' => array(),
+                'errors' => array('Not enough data to update!')
             );
-        if ($id == 1) 
+        if ($id == 1)
             unset($data['roles_id']);
         try {
             $data = $this::where('id', $id)->update($data);
@@ -93,9 +125,9 @@ class User extends Authenticatable implements JWTSubject
             $errors[] = $e->getMessage();
         }
         return array(
-            'status'    => $status,
-            'data'      => $data,
-            'errors'    => $errors
+            'status' => $status,
+            'data' => $data,
+            'errors' => $errors
         );
-    } 
+    }
 }

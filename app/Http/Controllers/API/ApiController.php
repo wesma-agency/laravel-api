@@ -3,15 +3,17 @@
 namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller as Controller;
 use Illuminate\Support\Facades\Route;
-
+use Illuminate\Http\Request;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class ApiController extends Controller {
 
+
 	public function __construct() {
-		$this->middleware('App\Http\Middleware\ApiBackend');
+		// $this->middleware('App\Http\Middleware\ApiBackend');
 	}
 
-	public function index() {
+	public function index(Request $request) {
 
 		$routeParams = array_values(Route::current()->parameters());
 
@@ -22,8 +24,9 @@ class ApiController extends Controller {
 
 
 		if (  class_exists($className) ) {
+
 			$Action = new $className();
-			return $Action->getResponse();
+			return $Action->getResponse($request);
 		}
 
 		else {
@@ -34,6 +37,43 @@ class ApiController extends Controller {
 			);
 		} 
 		
+
+	}
+
+	protected function checkAuth() {
+
+		$accessData = false;
+
+		try {
+
+			$JWTAuth = \Tymon\JWTAuth\Facades\JWTAuth::parseToken()->authenticate();
+			$accessData = $JWTAuth->getOriginal();
+
+		} catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
+			throw new HttpResponseException(
+				redirect('/')->with('status', 'Что-то пошло не так...')
+			);
+
+		} catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+			throw new HttpResponseException(
+				redirect('/')->with('status', 'Что-то пошло не так...')
+			);
+
+		} catch (\Tymon\JWTAuth\Exceptions\TokenBlacklistedException $e) {
+			throw new HttpResponseException(
+				redirect('/')->with('status', 'Что-то пошло не так...')
+			);
+
+		}
+		catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+			throw new HttpResponseException(
+				redirect('/')->with('status', 'Что-то пошло не так...')
+			);
+			
+		}
+
+		
+		return $accessData;
 
 	}
 
