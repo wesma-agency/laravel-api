@@ -37,11 +37,16 @@ class ApiController extends Controller {
 
 	public function sendResponse($data = [], $message = []) {
 
+		if( empty($message) ){
+			$message = ['Успех'];
+		}
+	
 		$response = [
 			'success' => true,
 			'message' => $message,
 			'data'    => $data,
 		];
+
 		return response()->json(
 				$response, 
 				200,
