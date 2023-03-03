@@ -92,6 +92,7 @@ class User extends Authenticatable implements JWTSubject {
         $result = false;
 
         if ($id !== null && !empty($fields)) {
+
             $result = $this::where('id', $id)->update($fields);
 
             if ($result != false) {

@@ -109,8 +109,7 @@ class UsersController extends Controller {
       $arValid['id'] = 'required|integer|exists:users,id';
 
 
-
-      if (!empty($requestData['email'])) {
+      if (isset($requestData['email'])) {
 
         $fields['email'] = $requestData['email'];
 
@@ -122,22 +121,27 @@ class UsersController extends Controller {
 
       }
 
-      if (!empty($requestData['name'])) {
+      if (isset($requestData['name'])) {
         $fields['name'] = $requestData['name'];
         $arValid['name'] = 'required|string|between:2,100';
       }
 
-      if (!empty($requestData['role'])) {
+      if (isset($requestData['role'])) {
+
+        //-- Перевести роль в верхний регистр
+        $requestData['role'] = Str::upper($requestData['role']);
+
         $fields['role'] = $requestData['role'];
         $arValid['role'] = 'required|in:' . env('DB_USER_ROLES');
+
       }
 
-      if (!empty($requestData['active'])) {
+      if (isset($requestData['active'])) {
         $fields['active'] = $requestData['active'];
-        $arValid['active'] = 'required|integer|in:0,1';
+        $arValid['active'] = 'required|integer|in:0,1';        
       }
 
-      if (!empty($requestData['password'])) {
+      if (isset($requestData['password'])) {
         $fields['password'] = $requestData['password'];
         $arValid['password'] = 'required|string|min:6';
       }
@@ -165,10 +169,6 @@ class UsersController extends Controller {
           $fields['password'] = bcrypt($fields['password']);
         }
 
-        //-- Перевести роль в верхний регистр
-        if (!empty($fields['role'])) {
-          $fields['role'] = Str::upper($fields['role']);
-        }
 
 
         //-- Записать изменения полей пользователя в БД
