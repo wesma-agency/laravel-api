@@ -45,7 +45,7 @@ class UsersController extends Controller {
         'data' => $result
       );
 
-      if( empty($result) ){
+      if (empty($result)) {
         $successResponse['message'] = ['Нет таких пользователей.'];
       }
 
@@ -168,32 +168,97 @@ class UsersController extends Controller {
         //-- Перевести роль в верхний регистр
         $fields['role'] = Str::upper($fields['role']);
 
+
+
+        //-- Записать изменения полей пользователя в БД
+        $result = $mUsers->editUser($id, $fields);
+
+        if ($result === 0) {
+
+          $errorResponse = array(
+            'success' => false,
+            'message' => ['Не удалось изменить пользователя.'],
+            'code' => 400,
+            'error' => [0 => 'Что-то пошло не так в процессе выполнения запроса к БД.'],
+          );
+
+          return $errorResponse;
+
+        } else {
+          return array(
+            'success' => true,
+            'message' => [],
+            'data' => $result
+          );
+        }
+
       }
 
 
-      //-- Записать изменения полей пользователя в БД
-      $result = $mUsers->editUser($id, $fields);
-
-      if ($result === 0) {
-
-        $errorResponse = array(
-          'success' => false,
-          'message' => ['Не удалось изменить пользователя.'],
-          'code' => 400,
-          'error' => [0 => 'Что-то пошло не так в процессе выполнения запроса к БД.'],
-        );
-
-        return $errorResponse;
-
-      } else {
-        return array(
-          'success' => true,
-          'message' => [],
-          'data' => $result
-        );
-      }
+    }
 
 
+  }
+
+  public function addUser($request) {
+
+    $mUsers = new User();
+
+    //-- Все поля пользовательского ввода
+    $requestData = $request->all();
+
+    //-- Массив для правил валидации полей пользовательского ввода
+    $arValid = array(
+      'name' => 'required|string|between:2,100',
+      'email' => 'required|string|email|max:100|unique:users',
+      'password' => 'required|string|confirmed|min:6',
+      'active' => 'integer|in:0,1',
+      'role' => 'in:' . env('DB_USER_ROLES'),
+    );
+
+
+    //-- Сообщения об ошибке для UI
+    $messages = array();
+    //-- Сами ошибки от методов проверки
+    $errors = array();
+
+
+    $errorResponse = array(
+      'success' => false,
+      'message' => $messages,
+      'code' => 400,
+      'error' => $errors
+    );
+
+
+
+    $validator = ApiController::getErrorsValidation(
+      $requestData,
+      $arValid
+    );
+
+
+    //-- Если пользовательский ввод инвалидный
+    if (!empty($validator)) {
+      $errorResponse['message'] = $validator['messages'];
+      $errorResponse['error'] = $validator['errors'];
+
+      return $errorResponse;
+    }
+
+    //-- Если пользовательский ввод валидный
+    else {
+
+      //-- Создать нового пользователя в БД
+      $user = User::create(array_merge(
+          $validator['validator']->validated(),
+        [
+          'password' => bcrypt($request->password),
+          'role' => Str::upper($request->role),
+        ]
+      ));
+
+      dd($user);
 
     }
 

@@ -5,11 +5,12 @@ namespace App\Http\Controllers\API\Actions;
 use App\Http\Controllers\API\ApiController;
 use App\Http\Controllers\UsersController;
 
-class Get_users__Action extends ApiController {
+class Add_user__Action extends ApiController {
 
 	public function getResponse($request) {
 
 		$accessData = $this->checkAuth();
+
 
 		if (
 			!empty($accessData['role'])
@@ -17,13 +18,30 @@ class Get_users__Action extends ApiController {
 			&& $accessData['active'] === 1
 		) {
 
-			$Users = new UsersController();
-			$data = $Users->getAllUsers($request);
 
-			return $this->sendResponse(
-				$data['data'],	 // $data
-				$data['message'] // $message
-			);
+			$Users = new UsersController();
+			$data = $Users->addUser($request);
+			
+
+			if( 
+				$data !== false 
+				&& $data['success'] !== false
+			){
+				return $this->sendResponse(
+					$data['data'],	 // $data
+					$data['message'] // $message
+				);
+			}
+
+			else {
+				return $this->sendError(
+					$data['message'], // $message
+					$data['code'], 		// $code
+					$data['error']		// $error
+				);
+			}
+
+			
 
 		} else {
 			return $this->sendError(

@@ -32,7 +32,7 @@ class ApiController extends Controller {
 
 		else {
 			return $this->sendError(
-				["Такого метода не существует"], 
+				["Такого метода не существует."], 
 				404,
 				[['class' => $className]]
 			);
