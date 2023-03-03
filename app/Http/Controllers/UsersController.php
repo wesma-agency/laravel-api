@@ -166,8 +166,9 @@ class UsersController extends Controller {
         }
 
         //-- Перевести роль в верхний регистр
-        $fields['role'] = Str::upper($fields['role']);
-
+        if (!empty($fields['role'])) {
+          $fields['role'] = Str::upper($fields['role']);
+        }
 
 
         //-- Записать изменения полей пользователя в БД
