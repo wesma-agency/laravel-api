@@ -18,15 +18,15 @@ class Get_users__Action extends ApiController {
 		) {
 
 			$Users = new UsersController();
-			$data = $Users->getAllUsers();
+			$data = $Users->getAllUsers($request);
 
 			return $this->sendResponse($data);
 
 		} else {
 			return $this->sendError(
-				$message = ["Уходи!"],
-				$code = 403,
-				$error = [['access' => 'denied']]
+				["Уходи!"], 							// $message
+				403, 											// $code
+				[['access' => 'denied']] 	// $error
 			);
 		}
 

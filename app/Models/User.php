@@ -56,54 +56,57 @@ class User extends Authenticatable implements JWTSubject {
     }
 
 
+    //-- ↑ JWT
 
+    //-- ↓ WESMA
 
-
-
-
-    public function getAllUsers() {
-
-        $result = $this->select('id', 'email', 'name', 'role', 'active', 'created_at', 'updated_at')
-            ->get()
-            ->keyBy('id')
-            ->toArray();
-
-        return $result;
-    }
-
-
-    public function editUser($requestData) {
-
-       
+    public function getAllUsers($ids = null) {
 
         $result = false;
 
-        $id = (int)$requestData['id'];
-        $query = array();
-
-        if( !empty($requestData['email']) ){
-            $query['email'] = $requestData['email'];
-        }
-        if( !empty($requestData['name']) ){
-            $query['name'] = $requestData['name'];
-        }
-        if( !empty($requestData['role']) ){
-            $query['role'] = $requestData['role'];
-        }
-        if( !empty($requestData['active']) ){
-            $query['active'] = $requestData['active'];
-        }
-        if( !empty($requestData['password']) ){
-            $query['password'] = $requestData['password'];
-        }
+        if ($ids !== null) {
 
 
+            $result = $this->select('id', 'email', 'name', 'role', 'active', 'created_at', 'updated_at')
+                ->whereIn('id', $ids)
+                ->get()
+                ->keyBy('id')
+                ->toArray(); 
 
-        $result = $this::where('id', $id)->update($query);
+        } else {
+
+            $result = $this->select('id', 'email', 'name', 'role', 'active', 'created_at', 'updated_at')
+                ->get()
+                ->keyBy('id')
+                ->toArray();
+
+        }
+
 
         return $result;
     }
 
+
+    public function editUser($id = null, $fields = []) {
+
+        $result = false;
+
+        if ($id !== null && !empty($fields)) {
+            $result = $this::where('id', $id)->update($fields);
+
+            if ($result != false) {
+                $result = $this->getUserById($id);
+            }
+
+        }
+
+
+        return $result;
+    }
+
+    public function getUserById($id = null) {
+        return $this::where('id', $id)->get()->first()->toArray();
+    }
 
 
     public function updateItem(int $id = 0, array $data = array()) {

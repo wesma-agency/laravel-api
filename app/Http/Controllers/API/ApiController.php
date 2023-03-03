@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller as Controller;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Validator;
 
 class ApiController extends Controller {
 
@@ -69,7 +70,7 @@ class ApiController extends Controller {
 			throw new HttpResponseException(
 				redirect('/')->with('status', 'Что-то пошло не так...')
 			);
-			
+
 		}
 
 		
@@ -81,7 +82,7 @@ class ApiController extends Controller {
 	public function sendResponse($data = [], $message = []) {
 
 		if( empty($message) ){
-			$message = ['Успех'];
+			$message = ['Успех!'];
 		}
 	
 		$response = [
@@ -100,7 +101,11 @@ class ApiController extends Controller {
 	}
 
 
-	public function sendError($message, $code = 404, $error = []) {
+	public function sendError($message = [], $code = 404, $error = []) {
+
+		if( empty($message) ){
+			$message = ['Что-то пошло не так!'];
+		}
 
 		$response = [
 			'success' => false,
@@ -116,4 +121,46 @@ class ApiController extends Controller {
 			);
 
 	}
+
+
+	static public function getErrorsValidation( $userFields=[], $arValid=[]) {
+
+		$result = [];
+
+		if( !empty($userFields) && !empty($arValid) ){
+			$validator = Validator::make(
+        $userFields,
+        $arValid
+      );
+
+			if ($validator->fails()) {
+
+				$result = [
+					'messages' => [],
+					'errors' => [],
+					'validator' => []
+				];
+
+				$errors = $validator->messages()->toArray();
+
+				foreach ($errors as $error) {
+
+					if (!empty($error)) {
+						foreach ($error as $message) {
+							$result['messages'][] = $message;
+						}
+					}
+
+				}
+
+				$result['errors'] = $errors;
+				$result['validator'] = $validator;
+
+      }
+		}
+
+		return $result;
+
+	}
+
 }

@@ -21,17 +21,23 @@ class Edit_user__Action extends ApiController {
 
 			$Users = new UsersController();
 			$data = $Users->editUser($request);
+			
 
-			if( $data === 1 ){
-				$data = array();
-				return $this->sendResponse($data);
+			if( 
+				$data !== false 
+				&& $data['success'] !== false
+			){
+				return $this->sendResponse(
+					$data['data'],	 // $data
+					$data['message'] // $message
+				);
 			}
 
 			else {
 				return $this->sendError(
-					$message = $data['message'],
-					$code = $data['code'],
-					$error = $data['error']
+					$data['message'], // $message
+					$data['code'], 		// $code
+					$data['error']		// $error
 				);
 			}
 
@@ -39,9 +45,9 @@ class Edit_user__Action extends ApiController {
 
 		} else {
 			return $this->sendError(
-				$message = ["Уходи!"],
-				$code = 403,
-				$error = [['access' => 'denied']]
+				["Уходи!"], 							// $message
+				403, 											// $code
+				[['access' => 'denied']] 	// $error
 			);
 		}
 
