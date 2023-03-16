@@ -46,26 +46,33 @@ class ApiController extends Controller {
 		$accessData = false;
 
 		try {
-
+			
 			$JWTAuth = \Tymon\JWTAuth\Facades\JWTAuth::parseToken()->authenticate();
 			$accessData = $JWTAuth->getOriginal();
-
-		} catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
+			
+		} 
+		//
+		catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
 			throw new HttpResponseException(
 				redirect('/')->with('status', 'Что-то пошло не так...')
 			);
 
-		} catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+		} 
+		//
+		catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
 			throw new HttpResponseException(
 				redirect('/')->with('status', 'Что-то пошло не так...')
 			);
 
-		} catch (\Tymon\JWTAuth\Exceptions\TokenBlacklistedException $e) {
+		} 
+		//
+		catch (\Tymon\JWTAuth\Exceptions\TokenBlacklistedException $e) {
 			throw new HttpResponseException(
 				redirect('/')->with('status', 'Что-то пошло не так...')
 			);
 
 		}
+		//
 		catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
 			throw new HttpResponseException(
 				redirect('/')->with('status', 'Что-то пошло не так...')
@@ -133,6 +140,7 @@ class ApiController extends Controller {
         $arValid
       );
 
+
 			if ($validator->fails()) {
 
 				$result = [
@@ -154,9 +162,11 @@ class ApiController extends Controller {
 				}
 
 				$result['errors'] = $errors;
-				$result['validator'] = $validator;
 
       }
+
+			$result['validator'] = $validator;
+
 		}
 
 		return $result;

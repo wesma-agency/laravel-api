@@ -11,7 +11,6 @@ class Add_user__Action extends ApiController {
 
 		$accessData = $this->checkAuth();
 
-
 		if (
 			!empty($accessData['role'])
 			&& $accessData['role'] === "DEVELOPER"

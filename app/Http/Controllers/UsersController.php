@@ -92,7 +92,7 @@ class UsersController extends Controller {
 
 
 
-      if (!empty($validator)) {
+      if (!empty($validator['errors'])) {
         $errorResponse['message'] = $validator['messages'];
         $errorResponse['error'] = $validator['errors'];
 
@@ -138,7 +138,7 @@ class UsersController extends Controller {
 
       if (isset($requestData['active'])) {
         $fields['active'] = $requestData['active'];
-        $arValid['active'] = 'required|integer|in:0,1';        
+        $arValid['active'] = 'required|integer|in:0,1';
       }
 
       if (isset($requestData['password'])) {
@@ -154,7 +154,7 @@ class UsersController extends Controller {
 
 
       //-- Если пользовательский ввод инвалидный
-      if (!empty($validator)) {
+      if (!empty($validator['errors'])) {
         $errorResponse['message'] = $validator['messages'];
         $errorResponse['error'] = $validator['errors'];
 
@@ -214,7 +214,7 @@ class UsersController extends Controller {
       'email' => 'required|string|email|max:100|unique:users',
       'password' => 'required|string|confirmed|min:6',
       'active' => 'integer|in:0,1',
-      'role' => 'in:' . env('DB_USER_ROLES'),
+      'role' => 'required|in:' . env('DB_USER_ROLES'),
     );
 
 
@@ -239,8 +239,10 @@ class UsersController extends Controller {
     );
 
 
+
+
     //-- Если пользовательский ввод инвалидный
-    if (!empty($validator)) {
+    if (!empty($validator['errors'])) {
       $errorResponse['message'] = $validator['messages'];
       $errorResponse['error'] = $validator['errors'];
 
@@ -252,14 +254,34 @@ class UsersController extends Controller {
 
       //-- Создать нового пользователя в БД
       $user = User::create(array_merge(
-          $validator['validator']->validated(),
+        $validator['validator']->validated(),
         [
           'password' => bcrypt($request->password),
           'role' => Str::upper($request->role),
         ]
       ));
 
-      dd($user);
+      if (!$user->id) {
+
+        $errorResponse = array(
+          'success' => false,
+          'message' => ['Не удалось изменить пользователя.'],
+          'code' => 400,
+          'error' => [0 => 'Что-то пошло не так в процессе выполнения запроса к БД.'],
+        );
+
+        return $errorResponse;
+
+      }
+
+      // 
+      else {
+        return array(
+          'success' => true,
+          'message' => [],
+          'data' => $user->attributesToArray(),
+        );
+      }
 
     }
 
