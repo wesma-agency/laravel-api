@@ -66,7 +66,23 @@ class AuthController extends Controller {
 
 
         if ($user->id) {
-            return $this->login($request);
+            // return $this->login($request);
+
+            $response = [
+                'success' => true,
+                'message' => ['Успех! Ожидайте активации'],
+                'data'    => [
+                    'front_action' => 'redirect',
+                    'to' => '/await'
+                ],
+            ];
+
+            return response()->json(
+				$response, 
+				200,
+				['Content-Type' => 'application/json;charset=UTF-8', 'Charset' => 'utf-8'],
+				JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+			);
         }
 
         return response()->json([
