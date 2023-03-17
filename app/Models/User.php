@@ -71,7 +71,7 @@ class User extends Authenticatable implements JWTSubject {
                 ->whereIn('id', $ids)
                 ->get()
                 ->keyBy('id')
-                ->toArray(); 
+                ->toArray();
 
         } else {
 
@@ -104,6 +104,22 @@ class User extends Authenticatable implements JWTSubject {
 
         return $result;
     }
+
+    public function deleteUser($id = null) {
+
+        $result = false;
+
+        if ($id !== null) {
+
+            $result = $this::where('id', $id)->delete();
+
+        }
+
+        return $result;
+    }
+
+
+
 
     public function getUserById($id = null) {
         return $this::where('id', $id)->get()->first()->toArray();

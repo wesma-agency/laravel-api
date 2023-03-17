@@ -18,4 +18,7 @@ Route::get('/', function () {
   return view('welcome');
 });
 
+Route::get('/yandex-position', function () {
+  return view('welcome');
+});
 
