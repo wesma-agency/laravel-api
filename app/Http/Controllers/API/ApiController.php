@@ -133,7 +133,10 @@ class ApiController extends Controller {
 
     static public function getErrorsValidation( $userFields=[], $arValid=[]) {
 
-        $result = [];
+        $result = [
+					'validator' => [],
+					'errors' => [],
+				];
 
         if( !empty($userFields) && !empty($arValid) ){
             $validator = Validator::make(

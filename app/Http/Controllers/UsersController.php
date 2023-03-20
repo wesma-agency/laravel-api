@@ -12,6 +12,7 @@ use App\Http\Controllers\API\ApiController;
 
 class UsersController extends Controller {
 
+
     public function getAllUsers($request) {
 
         //-- Все поля пользовательского ввода
@@ -55,6 +56,7 @@ class UsersController extends Controller {
 
     }
 
+
     public function editUser($request) {
 
         $mUsers = new User();
@@ -97,7 +99,7 @@ class UsersController extends Controller {
                 $errorResponse['error'] = $validator['errors'];
 
                 return $errorResponse;
-            }else{
+            } else {
                 $errorResponse = array(
                     'success' => false,
                     'message' => ['Не удалось найти пользователя.'],
@@ -210,7 +212,6 @@ class UsersController extends Controller {
 
     }
 
-
     public function deleteUser($request) {
 
         $mUsers = new User();
@@ -234,40 +235,25 @@ class UsersController extends Controller {
             'error' => $errors
         );
 
+        //-- Если в запросе нет параметров
+        if (empty($requestData)) {
 
-        //-- Если id пустой, дальше можно ничего не проверять
-        if (
-            empty($requestData['id'])
-            || (!empty($requestData['id']) && $requestData['id'] == 1)
-        ){
-
-            $validator = ApiController::getErrorsValidation(
-                $requestData,
-                ['id' => 'required|integer']
+            $errorResponse = array(
+                'success' => false,
+                'message' => ['Не удалось выполнить запрос.'],
+                'code' => 400,
+                'error' => [0 => 'В запросе не переданы параметры.'],
             );
 
-            if (!empty($validator['errors'])) {
-                $errorResponse['message'] = $validator['messages'];
-                $errorResponse['error'] = $validator['errors'];
-                
-                return $errorResponse;
-            }else{
-                $errorResponse = array(
-                    'success' => false,
-                    'message' => ['Не удалось удалить пользователя.'],
-                    'code' => 400,
-                    'error' => [0 => 'Необходимо указать id пользователя.'],
-                );
-
-                return $errorResponse;
-            }
+            return $errorResponse;
 
         }
-
+        
+        //
         else {
 
             $id = (int) $requestData['id'];
-            $arValid['id'] = 'required|integer|exists:users,id';
+            $arValid['id'] = 'required|integer|exists:users,id|not_in:1';
 
 
             $validator = ApiController::getErrorsValidation(
@@ -319,11 +305,6 @@ class UsersController extends Controller {
     }
 
 
-
-
-
-
-
     public function addUser($request) {
 
         $mUsers = new User();
@@ -355,14 +336,25 @@ class UsersController extends Controller {
         );
 
 
+        //-- Если в запросе нет параметров
+        if (empty($requestData)) {
+
+            $errorResponse = array(
+                'success' => false,
+                'message' => ['Не удалось выполнить запрос.'],
+                'code' => 400,
+                'error' => [0 => 'В запросе не переданы параметры.'],
+            );
+
+            return $errorResponse;
+
+        }
+
 
         $validator = ApiController::getErrorsValidation(
             $requestData,
             $arValid
         );
-
-
-
 
         //-- Если пользовательский ввод инвалидный
         if (!empty($validator['errors'])) {
@@ -410,5 +402,6 @@ class UsersController extends Controller {
 
 
     }
+
 
 }
